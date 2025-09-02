@@ -40,11 +40,15 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B clean verify
-        working-directory: ./Mr_Empirico-master  # ← working-directory aquí
+        working-directory: ./Mr_Empirico-master
 
       - name: Build and analyze with SonarCloud
+        run: |
+          cd ./Mr_Empirico-master
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=Deank23Go_Mr_Empirico \
+            -Dsonar.organization=deank23go \
+            -Dsonar.host.url=https://sonarcloud.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Deank23Go_Mr_Empirico -Dsonar.organization=deank23go -Dsonar.host.url=https://sonarcloud.io
-        working-directory: ./Mr_Empirico-master  # ← Y working-directory aquí también
