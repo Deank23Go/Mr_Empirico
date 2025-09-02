@@ -13,9 +13,6 @@ jobs:
     name: Build and analyze
     runs-on: ubuntu-latest
     environment: SONAR_TOKEN
-    defaults:
-      run:
-        working-directory: ./Mr_Empirico-master  # ← ESTA LÍNEA ES CLAVE
     
     steps:
       - uses: actions/checkout@v4
@@ -28,13 +25,6 @@ jobs:
           java-version: 17
           distribution: 'temurin'
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -42,11 +32,26 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Verify directory structure
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          echo "Checking Mr_Empirico-master directory:"
+          ls -la Mr_Empirico-master/
+          echo "POM file exists:"
+          find . -name "pom.xml" -type f
+
       - name: Build with Maven
         run: mvn -B clean verify
+        working-directory: ./Mr_Empirico-master
 
       - name: Build and analyze with SonarCloud
+        run: |
+          cd ./Mr_Empirico-master
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=Deank23Go_Mr_Empirico \
+            -Dsonar.organization=deank23go \
+            -Dsonar.host.url=https://sonarcloud.io
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Deank23Go_Mr_Empirico -Dsonar.organization=deank23go -Dsonar.host.url=https://sonarcloud.io
