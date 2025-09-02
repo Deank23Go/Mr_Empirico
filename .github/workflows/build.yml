@@ -42,6 +42,7 @@ jobs:
         working-directory: ./Mr_Empirico-master
 
       - name: Build and analyze with SonarCloud
+        working-directory: ./Mr_Empirico/Mr_Empirico-master/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necesario para PRs
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Tu token de SonarCloud
